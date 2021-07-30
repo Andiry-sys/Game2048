@@ -1,0 +1,105 @@
+﻿<Window x:Class="Game2048.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"           
+        xmlns:local="clr-namespace:Game2048"
+        
+        mc:Ignorable="d" FontSize="20"
+        Title="MainWindow" Height="600" Width="450" KeyUp="Window_KeyUp">
+    <Window.DataContext>
+        <local:ViewModel2048/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="249*"/>
+            <ColumnDefinition Width="193*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.ColumnSpan="2">
+            <TextBlock Text="2 0 4 8" FontSize="30" TextAlignment="Center"/>
+            <TextBlock>
+                <Run Text="Максимальное значение:"/>
+                <Run Text="{Binding MaxValue, Mode=OneWay}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Сумма всех значений:"/>
+                <Run Text="{Binding SumValue, Mode=OneWay}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Осталось пустых клеток:"/>
+                <Run Text="{Binding CountEmptyCell, Mode=OneWay}"/>
+            </TextBlock>
+            <Button Content="Restart" Command="{Binding RestartCommand}"/>
+        </StackPanel>
+        <Viewbox Grid.Row="1" Panel.ZIndex="10" Grid.ColumnSpan="2">
+            <TextBlock TextAlignment="Center" FontFamily="Gill Sans MT Ext Condensed Bold" FontWeight="Bold" Margin="10" Foreground="Red" Opacity="0.50" >
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="ИГРА &#10; закончена!"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsGameOver}" Value="false">
+                                <Setter Property="Text" Value="{x:Null}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Viewbox>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Cells}" Grid.ColumnSpan="2">
+            <ItemsControl.Resources>
+                <local:IntConverter x:Key="IntConverter"/>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="4" Columns="4"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:Cell}">
+                    <Border BorderBrush="PeachPuff"
+                           BorderThickness="5"
+                           Background="Peru">
+                        <Viewbox>
+                            <Label HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Margin="5"
+                               BorderThickness="5"
+                           >
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Content" Value="{Binding Value, Converter={StaticResource IntConverter}}"/>
+                                        <Setter Property="Foreground" Value="Moccasin"/>
+                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Value}" Value="{x:Static local:CellValueEnum.None}">
+                                                <Setter Property="Content" Value="{x:Null}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsNewValue}" Value="true">
+                                                <Setter Property="Foreground" Value="BurlyWood"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCalculated}" Value="true">
+                                                <Setter Property="BorderBrush" Value="Azure"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                            </Label>
+                        </Viewbox>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Control.HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Control.VerticalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+    </Grid>
+</Window>
